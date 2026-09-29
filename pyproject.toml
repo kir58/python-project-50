@@ -1,0 +1,18 @@
+[project]
+name = "python-project-50"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "kir", email = "advtrail@yandex.ru" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+python-project-50 = "python_project_50:main"
+gendiff = "python_project_50.scripts.gendiff:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
