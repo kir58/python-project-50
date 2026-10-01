@@ -10,9 +10,19 @@ requires-python = ">=3.14"
 dependencies = []
 
 [project.scripts]
-python-project-50 = "python_project_50:main"
-gendiff = "python_project_50.scripts.gendiff:main"
+gendiff = "gendiff.scripts.gendiff:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gendiff"]
 
 [build-system]
-requires = ["uv_build>=0.12.3,<0.13.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

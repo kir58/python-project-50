@@ -1,11 +1,18 @@
 import argparse
 import json
+from gendiff.utils import build_ast, render
 
 
 def read_json(file_path):
     with open(file_path) as file:
         return json.load(file)
 
+
+def generate_diff(file_path_1, file_path_2):
+    data1 = read_json(file_path_1)
+    data2 = read_json(file_path_2)
+
+    return render(build_ast(data1, data2))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -19,11 +26,7 @@ def main():
         help="set format of output",
     )
     args = parser.parse_args()
-
-    data1 = read_json(args.first_file)
-    data2 = read_json(args.second_file)
-    print(data1)
-    print(data2)
+    print(generate_diff(args.first_file, args.second_file))
 
 
 if __name__ == "__main__":
