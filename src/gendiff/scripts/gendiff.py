@@ -1,14 +1,15 @@
 import argparse
 
+from gendiff.formatters import format_diff
 from gendiff.read_file import read_file
-from gendiff.utils import build_ast, render
+from gendiff.utils import build_ast
 
 
-def generate_diff(file_path_1, file_path_2):
+def generate_diff(file_path_1, file_path_2, format_name="stylish"):
     data1 = read_file(file_path_1)
     data2 = read_file(file_path_2)
 
-    return render(build_ast(data1, data2))
+    return format_diff(build_ast(data1, data2), format_name)
 
 
 def main():
@@ -20,10 +21,11 @@ def main():
     parser.add_argument(
         "-f",
         "--format",
+        default="stylish",
         help="set format of output",
     )
     args = parser.parse_args()
-    print(generate_diff(args.first_file, args.second_file))
+    print(generate_diff(args.first_file, args.second_file, args.format))
 
 
 if __name__ == "__main__":
