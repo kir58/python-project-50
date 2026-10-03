@@ -23,6 +23,8 @@ cd python-project-50
 
 ## Использование
 [![asciicast](https://asciinema.org/a/1267379.svg)](https://asciinema.org/a/1267379)
+
+[![asciicast](https://asciinema.org/a/1267380.svg)](https://asciinema.org/a/1267380)
 ---
 
 <details>

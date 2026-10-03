@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from gendiff import generate_diff
@@ -90,3 +91,93 @@ def test_generate_diff_plain():
     file_path2 = ASSETS / "file2.json"
 
     assert generate_diff(file_path1, file_path2, "plain") == PLAIN
+
+
+EXPECTED_JSON = [
+    {
+        "type": "nested",
+        "key": "common",
+        "children": [
+            {"type": "added", "key": "follow", "value": False},
+            {"type": "unchanged", "key": "setting1", "value": "Value 1"},
+            {"type": "deleted", "key": "setting2", "value": 200},
+            {
+                "type": "changed",
+                "key": "setting3",
+                "deleted_value": True,
+                "added_value": None,
+            },
+            {"type": "added", "key": "setting4", "value": "blah blah"},
+            {
+                "type": "added",
+                "key": "setting5",
+                "value": {"key5": "value5"},
+            },
+            {
+                "type": "nested",
+                "key": "setting6",
+                "children": [
+                    {
+                        "type": "nested",
+                        "key": "doge",
+                        "children": [
+                            {
+                                "type": "changed",
+                                "key": "wow",
+                                "deleted_value": "",
+                                "added_value": "so much",
+                            }
+                        ],
+                    },
+                    {"type": "unchanged", "key": "key", "value": "value"},
+                    {"type": "added", "key": "ops", "value": "vops"},
+                ],
+            },
+        ],
+    },
+    {
+        "type": "nested",
+        "key": "group1",
+        "children": [
+            {
+                "type": "changed",
+                "key": "baz",
+                "deleted_value": "bas",
+                "added_value": "bars",
+            },
+            {"type": "unchanged", "key": "foo", "value": "bar"},
+            {
+                "type": "changed",
+                "key": "nest",
+                "deleted_value": {"key": "value"},
+                "added_value": "str",
+            },
+        ],
+    },
+    {
+        "type": "deleted",
+        "key": "group2",
+        "value": {"abc": 12345, "deep": {"id": 45}},
+    },
+    {
+        "type": "added",
+        "key": "group3",
+        "value": {"deep": {"id": {"number": 45}}, "fee": 100500},
+    },
+]
+
+
+def test_generate_diff_json():
+    file_path1 = ASSETS / "file1.json"
+    file_path2 = ASSETS / "file2.json"
+
+    result = generate_diff(file_path1, file_path2, "json")
+    assert json.loads(result) == EXPECTED_JSON
+
+
+def test_generate_diff_json_yml():
+    file_path1 = ASSETS / "file1.yml"
+    file_path2 = ASSETS / "file2.yml"
+
+    result = generate_diff(file_path1, file_path2, "json")
+    assert json.loads(result) == EXPECTED_JSON
