@@ -7,7 +7,9 @@ authors = [
     { name = "kir", email = "advtrail@yandex.ru" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pyyaml>=6.0",
+]
 
 [project.scripts]
 gendiff = "gendiff.scripts.gendiff:main"
@@ -20,8 +22,6 @@ dev = [
 ]
 
 [tool.coverage.report]
-# Порог покрытия: ниже него `make test-coverage` падает,
-# и сборка в CI краснеет вместе с ним
 fail_under = 80
 
 [tool.pytest.ini_options]

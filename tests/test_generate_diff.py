@@ -20,3 +20,10 @@ def test_generate_diff():
     file_path2 = ASSETS / "file2.json"
 
     assert generate_diff(file_path1, file_path2) == EXPECTED
+
+
+def test_generate_diff_yml():
+    file_path1 = ASSETS / "file1.yml"
+    file_path2 = ASSETS / "file2.yml"
+
+    assert generate_diff(file_path1, file_path2) == EXPECTED

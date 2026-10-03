@@ -1,17 +1,12 @@
 import argparse
-import json
 
+from gendiff.read_file import read_file
 from gendiff.utils import build_ast, render
 
 
-def read_json(file_path):
-    with open(file_path) as file:
-        return json.load(file)
-
-
 def generate_diff(file_path_1, file_path_2):
-    data1 = read_json(file_path_1)
-    data2 = read_json(file_path_2)
+    data1 = read_file(file_path_1)
+    data2 = read_file(file_path_2)
 
     return render(build_ast(data1, data2))
 
