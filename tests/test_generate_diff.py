@@ -2,7 +2,7 @@ from pathlib import Path
 
 from gendiff import generate_diff
 
-ASSETS = Path(__file__).resolve().parent.parent / "assets"
+ASSETS = Path(__file__).resolve().parent.parent / "tests" / "test_data"
 
 EXPECTED = """\
 {

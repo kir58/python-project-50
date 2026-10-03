@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Literal, NotRequired, TypedDict, cast
 
-
 ItemType = Literal["unchanged", "deleted", "added", "changed"]
 
 
@@ -15,7 +14,8 @@ class AstItem(TypedDict):
 
 
 def make_item(item_type: ItemType, key: str, **fields: Any) -> AstItem:
-    return cast(AstItem, cast(object, {"type": item_type, "key": key, **fields}))
+    item = {"type": item_type, "key": key, **fields}
+    return cast(AstItem, cast(object, item))
 
 
 def build_ast(file_1: dict[str, Any], file_2: dict[str, Any]) -> list[AstItem]:

@@ -15,7 +15,14 @@ gendiff = "gendiff.scripts.gendiff:main"
 [dependency-groups]
 dev = [
     "pytest>=8.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.7.1",
 ]
+
+[tool.coverage.report]
+# Порог покрытия: ниже него `make test-coverage` падает,
+# и сборка в CI краснеет вместе с ним
+fail_under = 80
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -1,5 +1,6 @@
 import argparse
 import json
+
 from gendiff.utils import build_ast, render
 
 
@@ -13,6 +14,7 @@ def generate_diff(file_path_1, file_path_2):
     data2 = read_json(file_path_2)
 
     return render(build_ast(data1, data2))
+
 
 def main():
     parser = argparse.ArgumentParser(
