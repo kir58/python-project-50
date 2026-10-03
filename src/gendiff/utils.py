@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal, NotRequired, TypedDict, cast
 
-ItemType = Literal["unchanged", "deleted", "added", "changed"]
+ItemType = Literal["unchanged", "deleted", "added", "changed", "nested"]
 
 
 class AstItem(TypedDict):
@@ -11,6 +11,7 @@ class AstItem(TypedDict):
     value: NotRequired[Any]
     deleted_value: NotRequired[Any]
     added_value: NotRequired[Any]
+    children: NotRequired[list[AstItem]]
 
 
 def make_item(item_type: ItemType, key: str, **fields: Any) -> AstItem:
@@ -18,7 +19,10 @@ def make_item(item_type: ItemType, key: str, **fields: Any) -> AstItem:
     return cast(AstItem, cast(object, item))
 
 
-def build_ast(file_1: dict[str, Any], file_2: dict[str, Any]) -> list[AstItem]:
+def build_ast(
+    file_1: dict[str, Any | dict],
+    file_2: dict[str, Any | dict],
+) -> list[AstItem]:
     ast: list[AstItem] = []
 
     keys = sorted(file_1.keys() | file_2.keys())
@@ -27,6 +31,10 @@ def build_ast(file_1: dict[str, Any], file_2: dict[str, Any]) -> list[AstItem]:
         value_1 = file_1.get(key, None)
         value_2 = file_2.get(key, None)
 
+        if isinstance(value_1, dict) and isinstance(value_2, dict):
+            children = build_ast(value_1, value_2)
+            ast.append(make_item("nested", key, children=children))
+            continue
         if value_1 == value_2:
             ast.append(make_item("unchanged", key, value=value_1))
             continue
@@ -59,22 +67,43 @@ def format_value(value: Any) -> str:
     return str(value)
 
 
-def render(ast: list[AstItem]) -> str:
-    result: list[str] = []
+def stringify(value: Any, depth: int) -> str:
+    if isinstance(value, dict):
+        indent = " " * (depth * 4)
+        closing_indent = " " * ((depth - 1) * 4)
+        lines = [
+            f"{indent}{key}: {stringify(inner, depth + 1)}"
+            for key, inner in value.items()
+        ]
+        return "{{\n{}\n{}}}".format("\n".join(lines), closing_indent)
+
+    return format_value(value)
+
+
+def render(ast: list[AstItem], depth: int = 1) -> str:
+    indent = " " * (depth * 4 - 2)
+    closing_indent = " " * ((depth - 1) * 4)
+    lines: list[str] = []
+
     for el in ast:
+        key = el["key"]
         match el["type"]:
             case "unchanged":
-                result.append(f"    {el['key']}: {format_value(el['value'])}")
+                value = stringify(el["value"], depth + 1)
+                lines.append(f"{indent}  {key}: {value}")
             case "changed":
-                result.append(
-                    f"  - {el['key']}: {format_value(el['deleted_value'])}"
-                )
-                result.append(
-                    f"  + {el['key']}: {format_value(el['added_value'])}"
-                )
+                deleted = stringify(el["deleted_value"], depth + 1)
+                added = stringify(el["added_value"], depth + 1)
+                lines.append(f"{indent}- {key}: {deleted}")
+                lines.append(f"{indent}+ {key}: {added}")
             case "added":
-                result.append(f"  + {el['key']}: {format_value(el['value'])}")
+                value = stringify(el["value"], depth + 1)
+                lines.append(f"{indent}+ {key}: {value}")
             case "deleted":
-                result.append(f"  - {el['key']}: {format_value(el['value'])}")
+                value = stringify(el["value"], depth + 1)
+                lines.append(f"{indent}- {key}: {value}")
+            case "nested":
+                children = render(el["children"], depth + 1)
+                lines.append(f"{indent}  {key}: {children}")
 
-    return "{{\n{}\n}}".format("\n".join(result))
+    return "{{\n{}\n{}}}".format("\n".join(lines), closing_indent)
